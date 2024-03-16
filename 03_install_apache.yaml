@@ -1,0 +1,15 @@
+---
+- name: install LAMP_Server
+  hosts: lab
+  become: yes
+  tasks:
+    - name: install httpd
+      yum: name=httpd state=present
+    - name: enable httpd service and start service
+      service: 
+         name: httpd
+         enabled: yes
+         state: started
+
+
+     

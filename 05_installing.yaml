@@ -1,0 +1,12 @@
+---
+- hosts: localhost
+  become: yes
+  name: "Install a List of Packages on Red Hat Based System"
+  tasks:
+    - name: "Installing a list of packages"
+      yum: name={{ item }} state=latest
+      with_items:
+        - curl
+        - httpd
+        - nano
+        - htop

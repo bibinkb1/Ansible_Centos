@@ -1,0 +1,10 @@
+---
+ - name: Ansible archive Examples
+   user: test
+   hosts: lab
+   tasks:
+    - name: Compress Directory contents
+      become: yes
+      archive:
+        path: /etc/ssh/
+        dest: /tmp/test.tar.gz
