@@ -1,6 +1,6 @@
 ---
 - name: print  message
-  hosts: lab
+  hosts: localhost
   become: true
   tasks: 
     - name: hello world

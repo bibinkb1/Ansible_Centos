@@ -1,0 +1,6 @@
+- name: Update all packages using yum
+  hosts: test
+  become: yes
+  tasks:
+    - name: Run yum update
+      ansible.builtin.shell: yum update -y

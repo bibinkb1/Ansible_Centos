@@ -1,6 +1,6 @@
 ---
 - name: install LAMP_Server
-  hosts: lab
+  hosts: localhost
   become: yes
   tasks:
     - name: install httpd

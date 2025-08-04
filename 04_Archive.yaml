@@ -1,7 +1,7 @@
 ---
  - name: Ansible archive Examples
    user: test
-   hosts: lab
+   hosts: localhost
    tasks:
     - name: Compress Directory contents
       become: yes
