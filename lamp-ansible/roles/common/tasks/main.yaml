@@ -1,0 +1,16 @@
+- name: Install basic packages
+  dnf:
+    name:
+      - epel-release
+      - git
+      - firewalld
+    state: present
+
+- name: Start and enable firewalld
+  service:
+    name: firewalld
+    state: started
+    enabled: yes
+- name: Set timezone to UTC
+  timezone:
+    name: Etc/UTC

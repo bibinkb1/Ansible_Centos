@@ -1,0 +1,31 @@
+- name: Install Apache
+  dnf:
+    name: httpd
+    state: present
+
+- name: Create document root
+  file:
+    path: "{{ doc_root }}"
+    state: directory
+    owner: apache
+    group: apache
+    mode: 0755
+
+- name: Deploy virtual host
+  template:
+    src: vhost.conf.j2
+    dest: /etc/httpd/conf.d/{{ server_name }}.conf
+  notify: Restart Apache
+
+- name: Open HTTP port
+  firewalld:
+    service: http
+    permanent: yes
+    state: enabled
+    immediate: yes
+
+- name: Enable Apache
+  service:
+    name: httpd
+    state: started
+    enabled: yes
