@@ -1,0 +1,12 @@
+---
+- hosts: vm
+  become: yes
+  tasks:
+    - name: Create a user named bibin
+      user: name=bibin state=present
+    - name: Create a user named anjali
+      user: name=anjali state=present
+    - name: Create a user named arun
+      user: name=arun state=present
+    - name: Create a user named athira
+      user: name=athira state=present

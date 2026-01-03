@@ -1,0 +1,22 @@
+---
+- name: variable example
+  hosts: vm
+  become: no
+
+  vars:
+    my_name: "Bibin"
+    my_age: 26
+    my_city: "Kochi"
+
+  tasks:
+    - name: Print my name
+      debug:
+        msg: "My name is {{ my_name }}"
+
+    - name: Print my age
+      debug:
+        msg: "My age is {{ my_age }}"
+
+    - name: Print my city
+      debug:
+        msg: "I live in {{ my_city }}"

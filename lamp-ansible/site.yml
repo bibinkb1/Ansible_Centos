@@ -1,9 +1,0 @@
-- name: LAMP Stack Provisioning
-  hosts: lamp
-  become: yes
-
-  roles:
-    - common
-    - apache
-    - mysql
-    - php

@@ -1,5 +1,5 @@
 - name: Update all packages using yum
-  hosts: test
+  hosts: vm
   become: yes
   tasks:
     - name: Run yum update

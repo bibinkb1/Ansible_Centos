@@ -1,0 +1,191 @@
+# Simple LEMP stack playbook for CentOS 9
+# Installs: Nginx, MariaDB, PHP-FPM
+
+- name: Install LEMP Stack on CentOS 9
+  hosts: vm
+  become: true
+
+  vars:
+    web_root: /var/www/html
+    mariadb_root_password: 'redhat'
+    php_fpm_user: nginx   # adjust to apache if your php-fpm runs as 'apache'
+
+  tasks:
+    - name: Install EPEL repository
+      package:
+        name: epel-release
+        state: present
+      notify: metadata cache
+
+    - name: Install Nginx, MariaDB, PHP and PHP-FPM
+      package:
+        name:
+          - nginx
+          - mariadb-server
+          - php
+          - php-fpm
+          - php-mysqlnd
+        state: present
+      notify:
+        - restart nginx
+        - restart php-fpm
+        - restart mariadb
+
+    - name: Ensure web root exists
+      file:
+        path: "{{ web_root }}"
+        state: directory
+        owner: "{{ php_fpm_user }}"
+        group: "{{ php_fpm_user }}"
+        mode: '0755'
+
+    - name: Deploy simple index.php
+      copy:
+        dest: "{{ web_root }}/index.php"
+        content: "<?php phpinfo(); ?>"
+        owner: "{{ php_fpm_user }}"
+        group: "{{ php_fpm_user }}"
+        mode: '0644'
+      notify: restart nginx
+
+    - name: Deploy custom Nginx virtual host
+      copy:
+        dest: "/etc/nginx/conf.d/example.local.conf"
+        content: |
+          server {
+              listen 80;
+              server_name _;
+              root /var/www/html;
+              index index.php index.html;
+              location / {
+                try_files $uri $uri/ =404;
+              }
+              location ~ \.php$ {
+                  include fastcgi_params;
+                  fastcgi_pass unix:/run/php-fpm/www.sock;
+                  fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+              }
+            }
+        owner: root
+        group: root
+        mode: '0644'
+      notify: restart nginx
+
+    - name: Enable and start Nginx
+      service:
+        name: nginx
+        state: started
+        enabled: true
+      notify: restart nginx
+
+    - name: Enable and start PHP-FPM
+      service:
+        name: php-fpm
+        state: started
+        enabled: true
+      notify: restart php-fpm
+
+    - name: Enable and start MariaDB
+      service:
+        name: mariadb
+        state: started
+        enabled: true
+      notify: restart mariadb
+
+    - name: Ensure Python3 and pip are installed (required for MySQL modules)
+      package:
+        name:
+          - python3
+          - python3-pip
+        state: present
+
+    - name: Install PyMySQL via pip3 (so Ansible can talk to MariaDB)
+      pip:
+        name: PyMySQL
+        state: present
+        executable: pip3
+
+    - name: Wait for MariaDB socket
+      wait_for:
+        path: /var/lib/mysql/mysql.sock
+        state: present
+        timeout: 60
+
+    - name: Set MariaDB root password (initial socket login)
+      mysql_user:
+        name: root
+        host_all: true
+        password: "{{ mariadb_root_password }}"
+        login_unix_socket: /var/lib/mysql/mysql.sock
+        state: present
+
+    - name: Remove anonymous users
+      mysql_user:
+        name: ''
+        host_all: true
+        state: absent
+        login_user: root
+        login_password: "{{ mariadb_root_password }}"
+
+    - name: Remove test database
+      mysql_db:
+        name: test
+        state: absent
+        login_user: root
+        login_password: "{{ mariadb_root_password }}"
+
+    - name: Disallow remote root login from any host (%)
+      mysql_user:
+        name: root
+        host: '%'
+        state: absent
+        login_user: root
+        login_password: "{{ mariadb_root_password }}"
+
+    - name: Create a sample database
+      mysql_db:
+        name: sample_db
+        state: present
+        login_user: root
+        login_password: "{{ mariadb_root_password }}"
+
+    - name: Ensure firewalld is running
+      service:
+        name: firewalld
+        state: started
+        enabled: true
+
+    - name: Open HTTP port in firewalld
+      firewalld:
+        service: http
+        permanent: yes
+        state: enabled
+        immediate: yes
+
+
+    - name: Open HTTPS port in firewalld
+      firewalld:
+        service: https
+        permanent: yes
+        state: enabled
+        immediate: yes
+
+  handlers:
+    - name: metadata cache
+      command: /usr/bin/true
+
+    - name: restart nginx
+      service:
+        name: nginx
+        state: restarted
+
+    - name: restart php-fpm
+      service:
+        name: php-fpm
+        state: restarted
+
+    - name: restart mariadb
+      service:
+        name: mariadb
+        state: restarted
+

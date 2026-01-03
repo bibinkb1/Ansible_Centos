@@ -1,0 +1,22 @@
+---
+- name: variable example
+  hosts: vm
+  become: true
+
+  vars:
+  - my_name: "Bibin"
+    
+  tasks:
+    - name: Print variable
+      command: echo "My name is {{ my_name }}"
+      register: result
+    - name: Show command output
+      debug:
+        var: result.stdout
+
+    - name: exicute date command
+      command: date
+      register: date_result 
+    - name: Show date command output
+      debug:
+        var: date_result.stdout

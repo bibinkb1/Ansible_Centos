@@ -1,0 +1,23 @@
+---
+- name: Simple Ansible handlers example
+  hosts: vm
+  become: yes
+
+  tasks:
+    - name: Install Nginx web server
+      package:
+        name: nginx
+        state: present
+      notify: Restart Nginx # Notify the handler to restart Nginx after installation this should be same as service name
+
+    - name: Copy index.html file
+      copy:
+        src: index.html
+        dest: /var/www/html/index.html
+      notify: Restart Nginx # Notify the handler to restart Nginx after copying the file
+
+  handlers:
+    - name: Restart Nginx # Handler to restart Nginx service
+      service:
+        name: nginx
+        state: restarted

@@ -1,0 +1,13 @@
+---
+- hosts: vm
+  become: yes
+  tasks:
+    - name: dummy command
+      command: nocmd
+      ignore_errors: yes
+      register: result  
+    - name: show result
+      debug:
+        var: result 
+    - name: EOT
+      command: echo EOT    

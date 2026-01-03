@@ -1,0 +1,32 @@
+---
+- name: Install Apache
+  dnf:
+    name: httpd
+    state: present
+
+- name: Start and enable Apache
+  service:
+    name: httpd
+    state: started
+    enabled: yes
+
+- name: Set ServerName to avoid warning
+  lineinfile:
+    path: /etc/httpd/conf/httpd.conf
+    line: "ServerName localhost"
+  notify: Restart Apache
+  
+- name: firewall setup for Apache
+  when: ansible_facts['os_family'] == "RedHat"  
+  service:
+    name: firewalld
+    state: started
+    enabled: yes
+
+- name: Allow HTTP through firewall
+  firewalld:
+    service: http
+    permanent: yes
+    state: enabled
+    immediate: yes
+  

@@ -1,0 +1,26 @@
+
+#### tag is the label which is given to the task to identify it.
+#we can run the specific task using the tag name. #### ansible-playbook 21_tags.yaml --tags task1 -K
+---
+- hosts: vm
+  become: yes
+  tasks:
+    - name: Task-1
+      command: echo "This is Task-1"
+      tags:
+          - task1
+          - common
+
+    - name: Task-2
+      command: echo "This is Task-2"
+      tags:
+          - task2
+          - common
+
+    - name: EOT
+      command: echo EOT
+        
+  # ansible-playbook 21_tags.yaml --tags task1 -K  ---- exicute only task1   
+  # ansible-playbook 21_tags.yaml --tags common -K ----- exicute both task1 and task2
+  # ansible-playbook 21_tags.yaml --skip-tags task1 -K ---- exicute all except task1
+  # ansible-playbook 21_tags.yaml --skip-tags common -K ---- exicute none of task1 and task2

@@ -1,0 +1,13 @@
+---
+- hosts: vm
+  become: yes
+  tasks:
+    - name: Create users using a loop
+      user:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - bibin
+        - anjali
+        - arun
+        - athira

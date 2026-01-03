@@ -1,0 +1,16 @@
+---
+- name: Install MariaDB
+  dnf:
+    name:
+      - mariadb-server
+      - python3-PyMySQL
+    state: present
+
+- name: Start and enable MariaDB
+  service:
+    name: mariadb
+    state: started
+    enabled: yes
+   
+
+ 

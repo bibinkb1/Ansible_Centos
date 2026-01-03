@@ -1,0 +1,10 @@
+---
+- hosts: vm
+  become: yes
+  tasks:
+    - name: Install htop
+      yum:
+        name: 
+          - htop
+        state: present
+      ignore_errors: yes

@@ -1,0 +1,17 @@
+---
+- hosts: vm
+  become: yes
+  tasks:
+    - name: Delete users using a loop
+      user:
+        name: "{{ item }}"
+        state: absent
+        remove: no # no for not removing home directory and mail spool
+      loop:
+        - bibin
+        - anjali
+        - arun
+        - athira
+        - alice
+        - bob
+        - charlie

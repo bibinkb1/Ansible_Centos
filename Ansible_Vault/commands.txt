@@ -1,0 +1,16 @@
+
+
+ansible-vault create vault.yaml - for creating a valut with credentials
+
+ansible-vault encrypt valut.yaml  --- for encrypting a existing file(valut.yaml)
+
+ansible-vault edit vault.yaml --- for editing 
+
+ansible-vault view vault.yml    ---- for viewing
+
+ansible-playbook mariadb.yaml --ask-vault-pass  ------- for running the playbook
+
+test
+
+
+
